@@ -110,6 +110,7 @@ def footer():
   </div>
 </div>
 <script src="js/site.js"></script>
+<script src="js/live.js"></script>
 """
 
 
@@ -151,6 +152,8 @@ def home():
   <h1 class="display">It&rsquo;s the Chani K experience</h1>
   <a class="btn big light" href="book.html">Book an appointment</a>
 </section>
+
+<div class="sales-strip" data-sales hidden></div>
 
 <section class="intro marble">
   <div class="inner">
@@ -281,8 +284,7 @@ def book():
     <div class="choices">
       <button class="choice" data-service="consultation"><div class="n">01</div><div class="t">New wig consultation</div><div class="d">Buy a new wig, buy a new look. Try on styles with our consultant and find the one for you.</div></button>
       <button class="choice" data-service="wash-set"><div class="n">02</div><div class="t">Wash &amp; Set</div><div class="d">Style a wig, style a vision. A full wash and set for your wig.</div></button>
-      <button class="choice" data-service="reset"><div class="n">03</div><div class="t">Reset</div><div class="d">A quick refresh of your style.</div></button>
-      <button class="choice" data-service="repair"><div class="n">04</div><div class="t">Repair / other</div><div class="d">Repair a wig, repair a dream. Tell us what you need and we&rsquo;ll take care of it.</div></button>
+      <button class="choice" data-service="repair"><div class="n">03</div><div class="t">Repair</div><div class="d">Repair a wig, repair a dream. Tell us what you need and we&rsquo;ll take care of it.</div></button>
     </div>
     <div class="callout" data-dropoff hidden>Please drop off your wig <b>3 business days before</b> your appointment. You can use the mail slot in our door at any time, day or night. Attach your name, phone number and instructions.</div>
     <div class="nav-row"><span></span><button class="btn" data-next="2" disabled>Continue</button></div>
@@ -298,6 +300,7 @@ def book():
   <div class="panel" data-panel="3">
     <div class="summary" data-summary></div>
     <form class="form" data-form="booking" novalidate>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="two">
         <div class="row"><input name="first" placeholder="First name" autocomplete="given-name" required></div>
         <div class="row"><input name="last" placeholder="Last name" autocomplete="family-name" required></div>
@@ -357,7 +360,9 @@ def collections():
         + header("collections")
         + f"""<main>
 <section class="page-hero photo-bg" style="background-image:url('img/about-hero.webp')"><h1 class="section-title">Our collections</h1></section>
+<div class="sales-strip" data-sales hidden></div>
 <section class="colls marble">
+  <div class="brands" data-brands hidden><h2 class="section-title">Brands we carry</h2><div class="chips"></div></div>
   <p class="lead">Every woman is different, so we carry more than one line. Come try them on, and we'll help you find the one that suits your style, your look and your budget. Don't see your color? We can usually get it for you.</p>
   {body}
 </section>
