@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>forms</title></head><body>
+<!-- Static copies of the site's forms so Netlify registers them at deploy time. Field names must match js/site.js and js/book.js. -->
+<form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="contact">
+  <input type="hidden" name="subject" value="Website message - Chani Kramer Wigs">
+  <input name="name"><input name="email" type="email"><input name="phone"><textarea name="message"></textarea>
+  <input name="bot-field">
+</form>
+<form name="booking-request" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="booking-request">
+  <input type="hidden" name="subject" value="New booking request - Chani Kramer Wigs">
+  <input name="first"><input name="last"><input name="phone"><input name="email" type="email">
+  <input name="service"><input name="date"><input name="time"><input name="heard_from">
+  <textarea name="notes"></textarea><input name="sms_consent">
+  <input name="bot-field">
+</form>
+</body></html>

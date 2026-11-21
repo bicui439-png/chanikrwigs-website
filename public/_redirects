@@ -1,0 +1,10 @@
+# Old WordPress addresses -> new pages. The two legal pages keep their exact old URLs
+# (the 10DLC texting registration points to them).
+/privacy-policy-2      /privacy.html   200
+/privacy-policy-2/     /privacy.html   200
+/terms-conditions      /terms.html     200
+/terms-conditions/     /terms.html     200
+/about/                /about          301
+/home/                 /               301
+/wp-admin/*            /               301
+/wp-login.php          /               301
