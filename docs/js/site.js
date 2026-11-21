@@ -2,7 +2,10 @@
 // SITE.live = false while the site is a preview: forms show a notice instead of sending.
 window.SITE = window.SITE || {
   // forms only send for real on the hosted site; everywhere else (previews) they show a notice
-  live: /(^|\.)chanikrwigs\.com$|\.netlify\.app$/.test(location.hostname),
+  live: /(^|\.)chanikrwigs\.com$|\.netlify\.app$|\.github\.io$/.test(location.hostname),
+  // Web3Forms access key (free form service, emails submissions to chani@chanikrwigs.com).
+  // It is meant to be public: it can only send to that inbox.
+  formKey: "",
 };
 
 (function () {
@@ -80,8 +83,18 @@ window.SITE = window.SITE || {
   window.sendForm = async function (name, data) {
     if (!SITE.live) return { preview: true };
     const subject = { "contact": "Website message - Chani Kramer Wigs", "booking-request": "New booking request - Chani Kramer Wigs" }[name];
-    const body = new URLSearchParams({ "form-name": name, subject, ...data }).toString();
-    const r = await fetch("/__forms.html", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+    const { website, ...fields } = data;            // honeypot: bots fill "website"
+    if (website) return { ok: true };
+    let r;
+    if (SITE.formKey) {
+      r = await fetch("https://api.web3forms.com/submit", {
+        method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ access_key: SITE.formKey, subject, from_name: "chanikrwigs.com", form: name, ...fields }),
+      });
+    } else { // Netlify Forms (only works while the site is hosted on Netlify)
+      const body = new URLSearchParams({ "form-name": name, subject, ...fields }).toString();
+      r = await fetch("/__forms.html", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body });
+    }
     if (!r.ok) throw new Error("send failed");
     return { ok: true };
   };

@@ -1,9 +1,9 @@
 """Builds the static pages of the Chani Kramer Wigs site from shared parts.
-Run:  python3 build.py   -> writes public/*.html
+Run:  python3 build.py   -> writes docs/*.html
 """
 from pathlib import Path
 
-OUT = Path(__file__).parent / "public"
+OUT = Path(__file__).parent / "docs"
 
 ICON_WA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 2.6a9.4 9.4 0 0 0-8.1 14.2L2.6 21.4l4.7-1.2A9.4 9.4 0 1 0 12 2.6z"/><path fill="currentColor" d="M8.6 7.4c.2-.4.5-.4.8-.4h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.4 0 .6.5.9 1.2 1.7 2.1 2.3.3.2.6.3.8.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.3.1.4.3.4.5 0 .6-.3 1.4-.9 1.8-.6.4-1.6.6-3.3-.1-2-.9-3.6-2.6-4.4-4.3-.6-1.4-.4-2.6.2-3.2z"/></svg>'
 ICON_IG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.6" cy="6.4" r="1.2" fill="currentColor"/></svg>'
@@ -471,4 +471,20 @@ if __name__ == "__main__":
     (OUT / "index.html").write_text(home(), encoding="utf-8")
     (OUT / "about.html").write_text(about(), encoding="utf-8")
     (OUT / "book.html").write_text(book(), encoding="utf-8")
+
+    # ---- GitHub Pages extras (no _redirects support there) ----
+    (OUT / "CNAME").write_text("chanikrwigs.com\n")
+    (OUT / ".nojekyll").write_text("")
+    def at(path, html):  # page served from a sub-folder: make relative links resolve from the site root
+        d = OUT / path; d.mkdir(parents=True, exist_ok=True)
+        (d / "index.html").write_text(html.replace("<head>", '<head>\n<base href="/">', 1), encoding="utf-8")
+    # old WordPress legal URLs (10DLC registration points to them): same content, same address
+    at("privacy-policy-2", legal("Privacy Policy", PRIVACY))
+    at("terms-conditions", legal("Terms & Conditions", TERMS))
+    def moved(path, to):
+        d = OUT / path; d.mkdir(parents=True, exist_ok=True)
+        (d / "index.html").write_text(f'<!doctype html><meta charset="utf-8"><title>Moved</title><link rel="canonical" href="{to}"><meta http-equiv="refresh" content="0; url={to}"><a href="{to}">Continue</a>', encoding="utf-8")
+    for old, to in (("about", "/about.html"), ("home", "/"), ("book", "/book.html"), ("gallery", "https://www.instagram.com/chanikr/"), ("visit", "/#contact")):
+        moved(old, to)
+    (OUT / "404.html").write_text('<!doctype html><meta charset="utf-8"><title>Chani Kramer Wigs</title><meta http-equiv="refresh" content="0; url=/"><a href="/">Go to the home page</a>', encoding="utf-8")
     print("built", [p.name for p in OUT.glob("*.html")])
