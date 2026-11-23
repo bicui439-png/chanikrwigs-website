@@ -33,10 +33,15 @@ window.salonApi = async function (path, opts = {}) {
 
   const strips = document.querySelectorAll("[data-sales]");
   if (strips.length) {
-    salonApi("/sales").then(sales => {
+    // Sales typed here on the website (shown until their end date), plus any the salon system sends.
+    const today = new Date().toISOString().slice(0, 10);
+    const LOCAL_SALES = [
+      { text: "Kallah Sale: buy 2 Rina wigs at full price, get a fall wig for $500 ($1,825 value).", ends: "2026-11-30" }
+    ].filter(s => !s.ends || s.ends >= today);
+    salonApi("/sales").catch(() => []).then(sales => {
       // Show only the customer-facing website text. The campaign NAME is an internal
       // label (written for staff), so it is never displayed here.
-      sales = (sales || []).filter(s => s.text);
+      sales = LOCAL_SALES.concat((sales || []).filter(s => s.text && !LOCAL_SALES.some(l => l.text === s.text)));
       if (!sales.length) return;
       const html = sales.map(s =>
         `<span class="sale">${esc(s.text)}${s.ends ? ` <i>until ${fmtEnd(s.ends)}</i>` : ""}</span>`
@@ -51,7 +56,9 @@ window.salonApi = async function (path, opts = {}) {
   const brands = document.querySelector("[data-brands]");
   if (brands) {
     salonApi("/brands").then(list => {
-      if (!list || !list.length) return;
+      const HIDE_BRANDS = ["yafi"]; // brands we don't show on the website
+      list = (list || []).filter(b => !HIDE_BRANDS.includes(String(b).trim().toLowerCase()));
+      if (!list.length) return;
       brands.querySelector(".chips").innerHTML = list.map(b => `<span class="chip">${esc(b)}</span>`).join("");
       brands.hidden = false;
     }).catch(() => {});
