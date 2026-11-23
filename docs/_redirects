@@ -1,9 +1,8 @@
 # Old WordPress addresses -> new pages. The two legal pages keep their exact old URLs
-# (the 10DLC texting registration points to them).
-/privacy-policy-2      /privacy.html   200
-/privacy-policy-2/     /privacy.html   200
-/terms-conditions      /terms.html     200
-/terms-conditions/     /terms.html     200
+# (the 10DLC texting registration points to them) — served as real folder pages
+# (docs/privacy-policy-2/, docs/terms-conditions/), so the address never changes.
+/privacy-policy-2      /privacy-policy-2/   301
+/terms-conditions      /terms-conditions/   301
 /about/                /about          301
 /book/                 /book           301
 /gallery/              https://www.instagram.com/chanikr/  302
