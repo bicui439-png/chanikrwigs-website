@@ -97,3 +97,58 @@ window.salonApi = async function (path, opts = {}) {
     } finally { btn.disabled = false; }
   });
 })();
+
+// ---------- live opening hours (footer + Visit box) ----------
+(function () {
+  const boxes = document.querySelectorAll("[data-hours]");
+  if (!boxes.length || !window.SITE || !SITE.live) return;
+  const t12 = hm => { const [h, m] = hm.split(":").map(Number); return `${((h + 11) % 12) + 1}${m ? ":" + String(m).padStart(2, "0") : ""} ${h < 12 ? "AM" : "PM"}`; };
+  salonApi("/hours").then(h => {
+    if (!h || !h.week || !h.week.length) return;
+    const today = h.next_days && h.next_days[0];
+    let now = "";
+    if (today) now = today.closed ? `<p class="now closed">Closed today${today.closed !== "Closed" ? " &mdash; " + today.closed : ""}</p>`
+      : `<p class="now open">Open today ${t12(today.open)} &ndash; ${t12(today.close)}${today.note ? " (" + today.note + ")" : ""}</p>`;
+    const rows = h.week.map(d => `<li><span>${d.day}</span><span>${d.open ? t12(d.open) + " &ndash; " + t12(d.close) : "Closed"}</span></li>`).join("");
+    const upcoming = (h.next_days || []).filter(d => d.closed && d.closed !== "Closed")
+      .map(d => `<li class="special"><span>${new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span><span>${d.closed}</span></li>`).join("");
+    boxes.forEach(b => { b.innerHTML = `<h3>Hours</h3>${now}<ul>${rows}${upcoming}</ul>`; b.hidden = false; });
+  }).catch(() => {});
+})();
+
+// ---------- chat bubble ----------
+// Talks to the salon system's assistant (POST /website/chat). If the system can't be
+// reached, it offers WhatsApp/phone instead, where the same assistant answers.
+(function () {
+  const open = document.querySelector("[data-chat-open]"), box = document.querySelector("[data-chat]");
+  if (!open || !box) return;
+  const log = box.querySelector("[data-chat-log]"), form = box.querySelector("[data-chat-form]");
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const linkify = s => esc(s).replace(/(https?:\/\/[^\s)]+|chanikrwigs\.com\/book)/g, u => `<a href="${u.startsWith("http") ? u : "https://" + u}">${u}</a>`).replace(/\n/g, "<br>");
+  let sid; try { sid = sessionStorage.getItem("chat_sid"); } catch {}
+  if (!sid) { sid = "web-" + Math.random().toString(36).slice(2, 12); try { sessionStorage.setItem("chat_sid", sid); } catch {} }
+  const history = [];
+  const add = (cls, html) => { const d = document.createElement("div"); d.className = "msg " + cls; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+  open.addEventListener("click", () => { box.hidden = false; open.hidden = true; form.message.focus(); });
+  box.querySelector("[data-chat-close]").addEventListener("click", () => { box.hidden = true; open.hidden = false; });
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const text = form.message.value.trim(); if (!text) return;
+    form.message.value = ""; add("me", esc(text));
+    const wait = add("bot typing", "&hellip;");
+    let reply;
+    try {
+      if (!window.SITE || !SITE.live) reply = "Preview only: on the live site the salon's assistant answers here.";
+      else {
+        const r = await salonApi("/chat", { body: { message: text, session_id: sid, history: history.slice(-8), website: form.website.value || null } });
+        reply = r.reply;
+      }
+    } catch (ex) {
+      reply = ex && ex.status === 429 ? "You're sending messages quickly &mdash; please wait a minute."
+        : `Our chat is offline right now. For a quick answer, <a href="https://wa.me/17186766003" target="_blank" rel="noopener">WhatsApp us</a> or call <a href="tel:+17186766003">718-676-6003</a> &mdash; our assistant answers there 24/7.`;
+      wait.className = "msg bot"; wait.innerHTML = reply; return;
+    }
+    history.push({ role: "user", text }, { role: "assistant", text: reply });
+    wait.className = "msg bot"; wait.innerHTML = linkify(reply);
+  });
+})();

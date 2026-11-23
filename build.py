@@ -107,6 +107,7 @@ def footer():
       Brooklyn, New York<br>
       11219
     </div>
+    <div class="hours" data-hours hidden></div>
   </div>
 </div></footer>
 <div class="copy"><div class="wrap">
@@ -125,6 +126,7 @@ def footer():
         <div>
           <div class="framed"><img src="img/contact.webp" alt="The salon lounge" loading="lazy"></div>
           <div class="book-cta center"><a class="btn" href="book.html">Book an appointment</a></div>
+          <div class="hours" data-hours hidden></div>
         </div>
         {CONTACT_FORM}
       </div>
@@ -137,9 +139,18 @@ def footer():
     </div>
   </div>
 </div>
+<button class="chat-float" data-chat-open aria-label="Chat with us">{ICON_CHAT}<span>Chat with us</span></button>
+<div class="chat-box" data-chat hidden role="dialog" aria-label="Chat with Chani Kramer Wigs Salon">
+  <div class="chat-head"><b>Chani Kramer Wigs</b><small>Usually answers in seconds</small><button data-chat-close aria-label="Close chat">&times;</button></div>
+  <div class="chat-log" data-chat-log><div class="msg bot">Hi! Ask me anything &mdash; booking, wig care, repairs, our collections.</div></div>
+  <form class="chat-form" data-chat-form><input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><input name="message" maxlength="800" placeholder="Type your message&hellip;" autocomplete="off" required><button aria-label="Send">&rarr;</button></form>
+</div>
 <script src="js/site.js"></script>
 <script src="js/live.js"></script>
 """
+
+
+ICON_CHAT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>'
 
 
 def marquee(text):
@@ -511,4 +522,10 @@ if __name__ == "__main__":
     at("privacy-policy-2", legal("Privacy Policy", PRIVACY))
     at("terms-conditions", legal("Terms & Conditions", TERMS))
     (OUT / "404.html").write_text('<!doctype html><meta charset="utf-8"><title>Chani Kramer Wigs</title><meta http-equiv="refresh" content="0; url=/"><a href="/">Go to the home page</a>', encoding="utf-8")
+    # ---- Google: sitemap + robots ----
+    base = "https://chanikrwigs.com"
+    urls = ["/", "/about", "/collections", "/kallah", "/book", "/faq", "/privacy-policy-2/", "/terms-conditions/"]
+    (OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "".join(f"  <url><loc>{base}{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /__forms.html\n\nSitemap: {base}/sitemap.xml\n", encoding="utf-8")
     print("built", [p.name for p in OUT.glob("*.html")])
