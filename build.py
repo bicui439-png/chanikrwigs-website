@@ -64,8 +64,36 @@ CONTACT_FORM = """<form class="form" data-form="contact" novalidate>
 </form>"""
 
 
+SUBSCRIBE = """<section class="subscribe" id="subscribe"><div class="wrap">
+  <div class="sub-head">
+    <h2>Be the first to know</h2>
+    <p>Sales, new collections and exclusive promotions &mdash; straight to your phone.</p>
+  </div>
+  <form data-form="subscribe" novalidate>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="sub-grid">
+      <input name="first" placeholder="First name" autocomplete="given-name" required>
+      <input name="last" placeholder="Last name" autocomplete="family-name" required>
+      <input name="phone" type="tel" placeholder="Mobile phone" autocomplete="tel" required>
+      <input name="email" type="email" placeholder="Email (optional)" autocomplete="email">
+      <div class="bday"><span>Birthday <small>(optional)</small></span>
+        <select name="bmonth" aria-label="Birthday month"><option value="">Month</option>MONTHS</select>
+        <select name="bday" aria-label="Birthday day"><option value="">Day</option>DAYS</select>
+      </div>
+      <button class="btn" type="submit">Subscribe</button>
+    </div>
+    <p class="fine">By subscribing you agree to receive promotional texts from Chani Kr Wigs Salon. Msg frequency varies. Msg &amp; data rates may apply. Reply STOP to unsubscribe. <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a></p>
+    <p class="err" data-sub-msg></p>
+  </form>
+</div></section>
+""".replace("MONTHS", "".join(f'<option value="{i}">{m}</option>' for i, m in enumerate(
+    ["January", "February", "March", "April", "May", "June", "July", "August",
+     "September", "October", "November", "December"], 1))
+).replace("DAYS", "".join(f'<option value="{d}">{d}</option>' for d in range(1, 32)))
+
+
 def footer():
-    return f"""<footer class="footer"><div class="grid">
+    return SUBSCRIBE + f"""<footer class="footer"><div class="grid">
   <a class="flogo" href="index.html"><img src="img/logo-white.png" alt="Chani Kramer Wigs Salon" width="366" height="251"></a>
   <div class="contact-col">
     <div class="icons">

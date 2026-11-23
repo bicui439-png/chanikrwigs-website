@@ -82,7 +82,7 @@ window.SITE = window.SITE || {
   // contact forms
   window.sendForm = async function (name, data) {
     if (!SITE.live) return { preview: true };
-    const subject = { "contact": "Website message - Chani Kramer Wigs", "booking-request": "New booking request - Chani Kramer Wigs" }[name];
+    const subject = { "contact": "Website message - Chani Kramer Wigs", "booking-request": "New booking request - Chani Kramer Wigs", "subscribe": "New promotions subscriber - Chani Kramer Wigs" }[name];
     const { website, ...fields } = data;            // honeypot: bots fill "website"
     if (website) return { ok: true };
     let r;
