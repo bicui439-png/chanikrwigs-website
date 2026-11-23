@@ -34,9 +34,12 @@ window.salonApi = async function (path, opts = {}) {
   const strips = document.querySelectorAll("[data-sales]");
   if (strips.length) {
     salonApi("/sales").then(sales => {
-      if (!sales || !sales.length) return;
+      // Show only the customer-facing website text. The campaign NAME is an internal
+      // label (written for staff), so it is never displayed here.
+      sales = (sales || []).filter(s => s.text);
+      if (!sales.length) return;
       const html = sales.map(s =>
-        `<span class="sale"><b>${esc(s.name)}</b>${s.text ? " &mdash; " + esc(s.text) : ""}${s.ends ? ` <i>until ${fmtEnd(s.ends)}</i>` : ""}</span>`
+        `<span class="sale">${esc(s.text)}${s.ends ? ` <i>until ${fmtEnd(s.ends)}</i>` : ""}</span>`
       ).join("");
       strips.forEach(el => {
         el.innerHTML = `<div class="wrap"><span class="label">Now at the salon</span>${html}<a class="btn" href="book.html#consultation">Book a consultation</a></div>`;
