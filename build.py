@@ -313,7 +313,8 @@ def book():
         <option>WhatsApp status</option><option>Walked by the salon</option><option>I'm a returning customer</option><option>Other</option>
       </select></div>
       <div class="row"><textarea name="notes" placeholder="Anything we should know? (wig brand, what needs repair, etc.)"></textarea></div>
-      <label class="consent"><input type="checkbox" name="sms_consent" value="yes"> <span>Text me appointment confirmations and reminders from Chani Kr Wigs Salon (KR wigs LLC). Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. See our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>.</span></label>
+      <label class="consent promo"><input type="checkbox" name="promos" value="yes"> <span><b>Yes, send me our best sales &amp; exclusive offers!</b> Be the first to hear about new collections and special promotions.</span></label>
+      <p class="fine">We'll text you about your appointment (confirmation and reminders). Msg &amp; data rates may apply. <a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a></p>
       <p class="err" data-err></p>
       <div class="nav-row"><button type="button" class="link-back" data-back="2">&larr; Back</button><button class="btn" type="submit">Book appointment</button></div>
     </form>

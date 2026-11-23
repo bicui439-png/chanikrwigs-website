@@ -201,8 +201,13 @@
           service: svc.system,
           datetime: `${iso(state.date)}T${pad(Math.floor(state.time / 60))}:${pad(state.time % 60)}`,
           first_name: data.first, last_name: data.last, phone: data.phone,
-          email: data.email || null, notes: data.notes || null, heard_from: data.heard_from,
-          sms_consent: data.sms_consent === "yes", website: data.website || null,
+          email: data.email || null,
+          // until the system stores the promotions choice itself, it also rides in the note
+          notes: [data.notes, data.promos === "yes" ? "Wants promotions: YES" : ""].filter(Boolean).join(" | ") || null,
+          heard_from: data.heard_from,
+          sms_consent: true,                       // appointment & customer-care texts always go out
+          marketing_opt_in: data.promos === "yes", // the only real choice on the form
+          website: data.website || null,
         } });
         if (!result.success) {
           err.textContent = friendly(result);
@@ -210,11 +215,11 @@
           return;
         }
         $("[data-done-text]").innerHTML = `You're booked for <b>${svc.name}</b> on <b>${when}</b>.` +
-          (data.sms_consent === "yes" ? " We'll text you a confirmation." : "") + dropoffLine();
+          " We'll text you a confirmation." + dropoffLine();
       } else {
         const r = await sendForm("booking-request", { service: svc.name, date: iso(state.date), time: fmtTime(state.time),
           first: data.first, last: data.last, phone: data.phone, email: data.email || "", notes: data.notes || "",
-          heard_from: data.heard_from, sms_consent: data.sms_consent || "" });
+          heard_from: data.heard_from, promotions: data.promos === "yes" ? "YES" : "no" });
         $("[data-done-text]").textContent = r.preview
           ? `Preview only: nothing was sent. On the live site, this books ${svc.name} on ${when} straight into the salon calendar.`
           : `We received your request for ${svc.name} on ${when}. We'll text you to confirm.`;
