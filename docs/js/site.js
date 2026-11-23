@@ -2,10 +2,10 @@
 // SITE.live = false while the site is a preview: forms show a notice instead of sending.
 window.SITE = window.SITE || {
   // forms only send for real on the hosted site; everywhere else (previews) they show a notice
-  live: /(^|\.)chanikrwigs\.com$|\.netlify\.app$|\.github\.io$/.test(location.hostname),
+  live: /(^|\.)chanikrwigs\.com$|\.netlify\.app$|\.github\.io$|\.pages\.dev$/.test(location.hostname),
   // Web3Forms access key (free form service, emails submissions to chani@chanikrwigs.com).
   // It is meant to be public: it can only send to that inbox.
-  formKey: "",
+  formKey: "9c1c3763-f723-499a-b4b8-b6514724948c",
 };
 
 (function () {

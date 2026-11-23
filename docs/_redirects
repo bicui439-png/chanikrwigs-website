@@ -5,6 +5,9 @@
 /terms-conditions      /terms.html     200
 /terms-conditions/     /terms.html     200
 /about/                /about          301
+/book/                 /book           301
+/gallery/              https://www.instagram.com/chanikr/  302
+/visit/                /#contact       301
 /home/                 /               301
 /wp-admin/*            /               301
 /wp-login.php          /               301

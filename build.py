@@ -510,10 +510,5 @@ if __name__ == "__main__":
     # old WordPress legal URLs (10DLC registration points to them): same content, same address
     at("privacy-policy-2", legal("Privacy Policy", PRIVACY))
     at("terms-conditions", legal("Terms & Conditions", TERMS))
-    def moved(path, to):
-        d = OUT / path; d.mkdir(parents=True, exist_ok=True)
-        (d / "index.html").write_text(f'<!doctype html><meta charset="utf-8"><title>Moved</title><link rel="canonical" href="{to}"><meta http-equiv="refresh" content="0; url={to}"><a href="{to}">Continue</a>', encoding="utf-8")
-    for old, to in (("about", "/about.html"), ("home", "/"), ("book", "/book.html"), ("gallery", "https://www.instagram.com/chanikr/"), ("visit", "/#contact")):
-        moved(old, to)
     (OUT / "404.html").write_text('<!doctype html><meta charset="utf-8"><title>Chani Kramer Wigs</title><meta http-equiv="refresh" content="0; url=/"><a href="/">Go to the home page</a>', encoding="utf-8")
     print("built", [p.name for p in OUT.glob("*.html")])
