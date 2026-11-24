@@ -117,8 +117,11 @@ window.salonApi = async function (path, opts = {}) {
     if (today) now = today.closed ? `<p class="now closed">Closed today${today.closed !== "Closed" ? " &mdash; " + today.closed : ""}</p>`
       : `<p class="now open">Open today ${t12(today.open)} &ndash; ${t12(today.close)}${today.note ? " (" + today.note + ")" : ""}</p>`;
     const rows = h.week.map(d => `<li><span>${d.day}</span><span>${d.open ? t12(d.open) + " &ndash; " + t12(d.close) : "Closed"}</span></li>`).join("");
-    const upcoming = (h.next_days || []).filter(d => d.closed && d.closed !== "Closed")
-      .map(d => `<li class="special"><span>${new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span><span>${d.closed}</span></li>`).join("");
+    // A day is a "special" closure when the salon is closed on a day it is normally open
+    // (holiday, staff event) - the regular Fri/Sat closures are already in the weekly list.
+    const normallyOpen = new Set(h.week.filter(d => d.open).map(d => d.day));
+    const upcoming = (h.next_days || []).filter((d, i) => i > 0 && d.closed && normallyOpen.has(d.day))
+      .map(d => `<li class="special"><span>${new Date(d.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span><span>${d.closed === "Closed" ? "Closed" : "Closed &mdash; " + d.closed}</span></li>`).join("");
     boxes.forEach(b => { b.innerHTML = `<h3>Hours</h3>${now}<ul>${rows}${upcoming}</ul>`; b.hidden = false; });
   }).catch(() => {});
 })();
