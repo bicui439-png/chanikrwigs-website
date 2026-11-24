@@ -138,8 +138,23 @@ window.salonApi = async function (path, opts = {}) {
   let sid; try { sid = sessionStorage.getItem("chat_sid"); } catch {}
   if (!sid) { sid = "web-" + Math.random().toString(36).slice(2, 12); try { sessionStorage.setItem("chat_sid", sid); } catch {} }
   const history = [];
+  // Who she is: first name + mobile (+ optional email). Asked once before the first message
+  // so the salon system files the chat under her customer profile and texts/emails the answer.
+  const who = box.querySelector("[data-chat-who]");
+  let me = null; try { me = JSON.parse(localStorage.getItem("chat_who") || "null"); } catch {}
+  const showChat = () => { who.hidden = true; form.hidden = false; };
+  if (me && me.phone) showChat();
+  who.addEventListener("submit", e => {
+    e.preventDefault();
+    const digits = who.phone.value.replace(/\D/g, "").replace(/^1(?=\d{10}$)/, "");
+    if (digits.length !== 10) { who.phone.setCustomValidity("Please enter a 10-digit US mobile number"); who.phone.reportValidity(); return; }
+    me = { first_name: who.first.value.trim(), phone: digits, email: who.email.value.trim() || null };
+    try { localStorage.setItem("chat_who", JSON.stringify(me)); } catch {}
+    showChat(); add("bot", `Thanks, ${esc(me.first_name)}! What can I help you with?`); form.message.focus();
+  });
+  who.phone.addEventListener("input", () => who.phone.setCustomValidity(""));
   const add = (cls, html) => { const d = document.createElement("div"); d.className = "msg " + cls; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
-  open.addEventListener("click", () => { box.hidden = false; open.hidden = true; form.message.focus(); });
+  open.addEventListener("click", () => { box.hidden = false; open.hidden = true; (form.hidden ? who.first : form.message).focus(); });
   box.querySelector("[data-chat-close]").addEventListener("click", () => { box.hidden = true; open.hidden = false; });
   form.addEventListener("submit", async e => {
     e.preventDefault();
@@ -150,7 +165,8 @@ window.salonApi = async function (path, opts = {}) {
     try {
       if (!window.SITE || !SITE.live) reply = "Preview only: on the live site the salon's assistant answers here.";
       else {
-        const r = await salonApi("/chat", { body: { message: text, session_id: sid, history: history.slice(-8), website: form.website.value || null } });
+        const r = await salonApi("/chat", { body: { message: text, session_id: sid, history: history.slice(-8), website: form.website.value || null,
+          first_name: me && me.first_name, phone: me && me.phone, email: me && me.email } });
         reply = r.reply;
       }
     } catch (ex) {

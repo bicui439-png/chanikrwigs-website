@@ -396,3 +396,8 @@ button{font:inherit;cursor:pointer}
 [hidden]{display:none!important}
 .link-google{display:inline-block;margin-left:18px;text-decoration:underline;font-size:16px}
 @media (max-width:640px){.link-google{display:block;margin:14px 0 0}}
+.chat-who{display:flex;flex-direction:column;gap:8px;padding:12px;border-top:1px solid #e6dbd8}
+.chat-who p{margin:0;font-size:14px}
+.chat-who input{border:1px solid #d9cbc7;padding:9px;font:inherit;font-size:15px}
+.chat-who button{border:0;background:var(--charcoal);color:#fff;padding:10px;font:inherit;cursor:pointer}
+.chat-who .fine{font-size:11px;color:#8a7a75}
